@@ -3,16 +3,18 @@ require 'nokogiri'
 require 'open-uri'
 require 'date'
 require 'time'
+require 'fileutils'
 
 def parse_table(table, existing_ids, new_content)
   table.css("tr").each do |row|
     if cells = row.css("td")
       if cells[0]
-        id = cells[0].text.chop
+        id = cells[0].text.chomp
         unless existing_ids.include? id
           href = cells[0].css("a").first["href"]
-          subject = cells[1].text.chop
-          new_content << {:id => id, :subject => subject, :href => href}
+          subject = cells[1].text.chomp
+          date = DateTime.parse(cells[4].text + "-01")
+          new_content << {:id => id, :subject => subject, :href => href, :date => date}
           existing_ids << id
         end
       end
@@ -49,9 +51,19 @@ def save_existing_ids(existing_ids)
 end
 
 def save_content(content)
+  content.sort!{|a,b| a[:date] <=> b[:date]}
+  current_date = nil
   File.open("releases/#{Time.now.strftime("%Y-%m-%d-%H%M%S")}.md", "w") do |f|
     content.each do |document|
-      f.puts "* #{document[:subject]} : [#{document[:href].gsub("/gifiles/docs/","")}](http://wikileaks.org#{document[:href]})\n"
+      if current_date.nil? || current_date != document[:date]
+        if document[:date].strftime("%Y-%m") == "1970-01"
+          f.puts "\n# unspecified\n\n"
+        else
+          f.puts "\n# #{document[:date].strftime("%Y-%m")}\n\n"
+        end
+        current_date = document[:date]
+      end
+      f.puts "+ #{document[:subject]} : [#{document[:href].gsub("/gifiles/docs/","")}](http://wikileaks.org#{document[:href]})\n"
     end
   end
 end
