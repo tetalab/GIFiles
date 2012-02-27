@@ -50,17 +50,21 @@ end
 def save_content(content)
   File.open("#{Time.now.strftime("%Y-%m-%d-%H%M%S")}.md", "w") do |f|
     content.each do |document|
-      f.write "* [#{document[:subject]}](http://wikileaks.org#{document[:href]})"
+      f.puts "* #{document[:subject]} : [#{document[:href].gsub("/gifiles/docs/","")}](http://wikileaks.org#{document[:href]})\n"
     end
   end
 end
 
-existing_ids = load_existing_ids
-new_content = []
+def fetch_release(forced = false)
+  existing_ids = forced ? [] : load_existing_ids
+  new_content = []
 
-parse_gifiles(existing_ids, new_content)
+  parse_gifiles(existing_ids, new_content)
 
-if new_content.size > 0
-  save_existing_ids(existing_ids)
-  save_content(new_content)
+  if new_content.size > 0
+    save_existing_ids(existing_ids)
+    save_content(new_content)
+  end
 end
+
+fetch_release(true)
