@@ -69,8 +69,20 @@ def save_content(content)
   end
 end
 
+def html_content(filename)
+  content = ""
+  File.open(filename, "r") do |f|
+    while line = f.gets
+      content << line
+    end
+  end
+  return content
+end
+
 def create_html
   content = []
+  header = html_content("_site/header.html")
+  footer = html_content("_site/footer.html")
   Dir.glob("releases/*.md").each do |release|
     text = ""
     documents = 0
@@ -83,13 +95,17 @@ def create_html
     content << {:filename => release.gsub("releases/", "").gsub(".md", ""), :text => text, :size => documents}
   end
   File.open("_site/index.html", "w") do |f|
+    f.write header
     content.each do |file|
       f.write "<li><a href='#{file[:filename]}.html'>#{file[:filename]}</a> : #{file[:size]} documents</li>"
     end
+    f.write footer
   end
   content.each do |file|
     File.open("_site/#{file[:filename]}.html", "w") do |f|
+      f.write header
       f.write Markdown.new(file[:text]).to_html
+      f.write footer
     end
   end
 end
@@ -107,4 +123,5 @@ def fetch_release(forced = false)
   end
 end
 
-fetch_release
+#fetch_release
+create_html
