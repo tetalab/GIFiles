@@ -4,6 +4,7 @@ require 'open-uri'
 require 'date'
 require 'time'
 require 'fileutils'
+require 'redcarpet/compat'
 
 def parse_table(table, existing_ids, new_content)
   table.css("tr").each do |row|
@@ -68,6 +69,31 @@ def save_content(content)
   end
 end
 
+def create_html
+  content = []
+  Dir.glob("releases/*.md").each do |release|
+    text = ""
+    documents = 0
+    File.open(release, "r") do |f|
+      while line = f.gets
+        text << line
+        documents += 1 if line.match(/^\+/)
+      end
+    end
+    content << {:filename => release.gsub("releases/", "").gsub(".md", ""), :text => text, :size => documents}
+  end
+  File.open("_site/index.html", "w") do |f|
+    content.each do |file|
+      f.write "<li><a href='#{file[:filename]}.html'>#{file[:filename]}</a> : #{file[:size]} documents</li>"
+    end
+  end
+  content.each do |file|
+    File.open("_site/#{file[:filename]}.html", "w") do |f|
+      f.write Markdown.new(file[:text]).to_html
+    end
+  end
+end
+
 def fetch_release(forced = false)
   existing_ids = forced ? [] : load_existing_ids
   new_content = []
@@ -77,7 +103,8 @@ def fetch_release(forced = false)
   if new_content.size > 0
     save_existing_ids(existing_ids)
     save_content(new_content)
+    create_html
   end
 end
 
-fetch_release(true)
+fetch_release
