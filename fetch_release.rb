@@ -39,6 +39,7 @@ def parse_gifiles(existing_ids, new_content)
 end
 
 def load_existing_ids
+  FileUtils.touch "existing_ids.md" unless File.exists? "existing_ids.md"
   file = File.open("existing_ids.md", 'r')
   return file.gets.split("-")
 end
@@ -48,7 +49,7 @@ def save_existing_ids(existing_ids)
 end
 
 def save_content(content)
-  File.open("#{Time.now.strftime("%Y-%m-%d-%H%M%S")}.md", "w") do |f|
+  File.open("releases/#{Time.now.strftime("%Y-%m-%d-%H%M%S")}.md", "w") do |f|
     content.each do |document|
       f.puts "* #{document[:subject]} : [#{document[:href].gsub("/gifiles/docs/","")}](http://wikileaks.org#{document[:href]})\n"
     end
