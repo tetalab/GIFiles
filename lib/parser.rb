@@ -1,14 +1,24 @@
 require 'nokogiri'
 require 'open-uri'
 
+def parse_emails(document)
+  doc = Nokogiri::HTML(open(document.href))
+  emails = []
+  from_row, to_row = doc.css("table.cable:first tr").
+    select{|row| ["From", "To"].include? row.css("th").text }.
+    map{|row| row.css("td").text.strip }
+  document.sender = from_row
+  document.receivers = to_row.split(", ")
+end
+
 def parse_table(table, new_content)
   table.css("tr").each do |row|
     if cells = row.css("td")
       if cells[0]
-        id = cells[0].text.chomp
+        id = cells[0].text.strip
         unless Document.find_by_wikileaks_id(id)
           href = cells[0].css("a").first["href"]
-          subject = cells[1].text.chomp
+          subject = cells[1].text.strip
           date = DateTime.parse(cells[4].text + "-01")
           new_content << Document.create(
             :wikileaks_id => id,

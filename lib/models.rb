@@ -9,6 +9,10 @@ class Document
   key :subject, String
   key :href, String
   key :date, Time
+  #key :email_ids, Array
+
+  #one :sender, :in => :email_ids
+  #many :receivers, :in => :emails_ids
 
   belongs_to :pool
 
