@@ -6,6 +6,7 @@ require 'time'
 require 'fileutils'
 require 'redcarpet/compat'
 require 'mongo_mapper'
+require 'erb'
 
 MongoMapper.database = 'wikileaks_stratfor'
 
@@ -16,6 +17,17 @@ class Document
   key :subject, String
   key :href, String
   key :date, Time
+
+  belongs_to :pool
+
+  timestamps!
+end
+
+
+class Pool
+  include MongoMapper::Document
+
+  many :documents
 
   timestamps!
 end
@@ -56,66 +68,68 @@ def parse_gifiles(new_content)
   doc = Nokogiri::HTML(open("http://wikileaks.org/gifiles/releasedate/2012-02-27.html"))
   doc.css(".listoflist")[1].css("a").each do |date|
     parse_page(date["href"], new_content)
+    unless new_content.empty?
+      pool = Pool.new
+      pool.documents = new_content
+      pool.save
+    end
   end
 end
 
-def save_content(content)
-  content.sort!{|a,b| a[:date] <=> b[:date]}
-  current_date = nil
-  File.open("releases/#{Time.now.strftime("%Y-%m-%d-%H%M%S")}.md", "w") do |f|
-    content.each do |document|
-      if current_date.nil? || current_date != document[:date]
-        if document[:date].strftime("%Y-%m") == "1970-01"
-          f.puts "\n# unspecified\n\n"
+def stats_data(documents)
+  data = {}
+  documents.each do |document|
+    if data[document.date.strftime("%Y-%m")]
+      data[document.date.strftime("%Y-%m")] += 1
+    else
+      data[document.date.strftime("%Y-%m")] = 1
+    end
+  end
+  return data.to_a.map{|d| {:y => d[0], :a => d[1]}}.to_json
+end
+
+def create_index
+  pools = Pool.all(:order => :created_at.desc)
+  content = "<ul>"
+  pools.each do |pool|
+    creation_date = pool.created_at.strftime("%d-%m-%Y_at_%H:%M")
+    content << "<li><a href='#{creation_date}.html'>#{creation_date}</a> : #{pool.documents.size} documents</li>"
+  end
+  morris_data = stats_data(Document.where(:date.gte => 20.years.ago).sort(:date.desc))
+  erb = ERB.new(File.read("views/layout.erb"))
+  File.open("_site/index.html", "w"){|f| f.write(erb.result(binding))}
+end
+
+def create_pools
+  erb = ERB.new(File.read("views/layout.erb"))
+  Pool.all.each do |pool|
+    content = ""
+    creation_date = pool.created_at.strftime("%d-%m-%Y_at_%H:%M")
+    current_date = nil
+    closing = false
+    morris_data = stats_data(pool.documents.where(:date.gte => 20.years.ago).sort(:date.desc))
+    pool.documents.all(:order => :date.asc).each do |document|
+      if current_date.nil? || current_date != document.date
+        content += "</ul>" if closing
+        if document.date.strftime("%Y-%m") == "1970-01"
+          content += "<h3>unspecified</h3>"
         else
-          f.puts "\n# #{document[:date].strftime("%Y-%m")}\n\n"
+          content += "<h3>#{document.date.strftime("%Y-%m")}</h3>"
         end
-        current_date = document[:date]
+        current_date = document.date
+        content += "<ul>"
+        closing = true
       end
-      f.puts "+ #{document[:subject]} : [#{document[:href].gsub("/gifiles/docs/","")}](http://wikileaks.org#{document[:href]})\n"
+      content += "<li>#{document.subject} : <a href='http://wikileaks.org#{document.href}'>#{document.href.gsub("/gifiles/docs/","")}</a></li>"
     end
+    content += "</ul>"
+    File.open("_site/#{creation_date}.html", "w"){|f| f.write(erb.result(binding))}
   end
-end
-
-def html_content(filename)
-  content = ""
-  File.open(filename, "r") do |f|
-    while line = f.gets
-      content << line
-    end
-  end
-  return content
 end
 
 def create_html
-  content = []
-  header = html_content("_site/header.html")
-  footer = html_content("_site/footer.html")
-  Dir.glob("releases/*.md").each do |release|
-    text = ""
-    documents = 0
-    File.open(release, "r") do |f|
-      while line = f.gets
-        text << line
-        documents += 1 if line.match(/^\+/)
-      end
-    end
-    content << {:filename => release.gsub("releases/", "").gsub(".md", ""), :text => text, :size => documents}
-  end
-  File.open("_site/index.html", "w") do |f|
-    f.write header
-    content.each do |file|
-      f.write "<li><a href='#{file[:filename]}.html'>#{file[:filename]}</a> : #{file[:size]} documents</li>"
-    end
-    f.write footer
-  end
-  content.each do |file|
-    File.open("_site/#{file[:filename]}.html", "w") do |f|
-      f.write header
-      f.write Markdown.new(file[:text]).to_html
-      f.write footer
-    end
-  end
+  create_index
+  create_pools
 end
 
 def fetch_release(forced = false)
@@ -125,10 +139,9 @@ def fetch_release(forced = false)
 
   p new_content.size
   if new_content.size > 0
-    #save_content(new_content)
-    #create_html
+    create_html
   end
 end
 
-fetch_release
-#create_html
+#fetch_release
+create_html
