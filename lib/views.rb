@@ -26,7 +26,7 @@ def stats_subject(pool)
   content.delete("re:")
   content.delete("fwd:")
   content.delete("the")
-  return content.sort_by{|k,v| !v }.to_a[0..3]
+  return content.sort_by{|k,v| v }.to_a[0..3]
 end
 
 def pool_list

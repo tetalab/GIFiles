@@ -16,8 +16,8 @@ def fetch_release(forced = false)
   remote_count = doc.css("div.pane.small").text.scan(/\d+/).first.to_i
 
   if current_count != remote_count
-    Pool.create(:documents => parse_gifiles)
-    puts "Mail released: #{Pool.last.documents.count}"
+    pool = Pool.create(:documents => parse_gifiles)
+    puts "Mail released: #{pool.documents.count}"
     create_html
   end
 end
@@ -33,5 +33,5 @@ def fetch_emails
   end
 end
 
-#fetch_release
-create_html
+fetch_release
+#create_html
