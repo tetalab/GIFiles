@@ -1,3 +1,2 @@
-*.md
 _site/
 deploy.sh
