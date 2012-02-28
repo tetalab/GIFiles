@@ -156,5 +156,5 @@ def fetch_release(forced = false)
   end
 end
 
-#fetch_release
-create_html
+fetch_release
+#create_html
