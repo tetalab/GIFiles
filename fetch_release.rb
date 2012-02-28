@@ -23,6 +23,13 @@ class Document
   timestamps!
 end
 
+class Email
+  include MongoMapper::Document
+
+  key :label, String
+
+  timestamps!
+end
 
 class Pool
   include MongoMapper::Document
@@ -88,22 +95,28 @@ def stats_data(documents)
   return data.to_a.map{|d| {:y => d[0], :a => d[1]}}.to_json
 end
 
-def create_index
+def pool_list
   pools = Pool.all(:order => :created_at.desc)
   content = "<ul>"
   pools.each do |pool|
     creation_date = pool.created_at.strftime("%d-%m-%Y_at_%H:%M")
     content << "<li><a href='#{creation_date}.html'>#{creation_date}</a> : #{pool.documents.size} documents</li>"
   end
+  return content
+end
+
+def create_index
+  content = pool_list
   morris_data = stats_data(Document.where(:date.gte => 20.years.ago).sort(:date.desc))
-  erb = ERB.new(File.read("views/layout.erb"))
+  erb = ERB.new(File.read("layouts/index.erb"))
   File.open("_site/index.html", "w"){|f| f.write(erb.result(binding))}
 end
 
 def create_pools
-  erb = ERB.new(File.read("views/layout.erb"))
+  erb = ERB.new(File.read("layouts/pool.erb"))
+  menu = pool_list
   Pool.all.each do |pool|
-    content = ""
+    content = "<p>Released at #{pool.created_at.strftime("%H:%M on %d/%m/%Y")} - #{pool.documents.size} documents"
     creation_date = pool.created_at.strftime("%d-%m-%Y_at_%H:%M")
     current_date = nil
     closing = false
@@ -120,7 +133,7 @@ def create_pools
         content += "<ul>"
         closing = true
       end
-      content += "<li>#{document.subject} : <a href='http://wikileaks.org#{document.href}'>#{document.href.gsub("/gifiles/docs/","")}</a></li>"
+      content += "<li>#{document.subject} [<a href='http://wikileaks.org#{document.href}'>Read</a>]</li>"
     end
     content += "</ul>"
     File.open("_site/#{creation_date}.html", "w"){|f| f.write(erb.result(binding))}
@@ -137,7 +150,7 @@ def fetch_release(forced = false)
 
   parse_gifiles(new_content)
 
-  p new_content.size
+  puts "Releases: #{new_content.size}"
   if new_content.size > 0
     create_html
   end

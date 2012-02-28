@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8" />
+
+	<!-- Set the viewport width to device width for mobile -->
+	<meta name="viewport" content="width=device-width" />
+
+	<title>Wikileaks GIFiles Updates</title>
+  
+	<!-- Included CSS Files -->
+	<link rel="stylesheet" href="stylesheets/foundation.css">
+	<link rel="stylesheet" href="stylesheets/app.css">
+
+	<!--[if lt IE 9]>
+		<link rel="stylesheet" href="stylesheets/ie.css">
+	<![endif]-->
+
+
+	<!-- IE Fix for HTML5 Tags -->
+	<!--[if lt IE 9]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+</head>
+<body>
+
+	<!-- container -->
+	<div class="container">
+
+		<div class="row">
+      <div class="twelve columns">
+        <div id="annual" class="graph"></div>
+        <hr />
+      </div>
+		</div>
+    <div class="row">
+      <div class="eight columns">
+        <h2>Wikileaks GIFiles</h2>
+        <%= content %>
+      </div>
+      <div class="four columns">
+        <h3>Latest releases</h3>
+        <%= menu %>
+        <hr>
+        <ul>
+          <li><a href="http://wikileaks.org/gifiles">Wikileaks - The Global Intelligence Files</a></li>
+          <li><a href="http://tetalab.org">Tetalab</a></li>
+          <li><a href="/">[home]</a></li>
+        </ul>
+      </div>
+	</div>
+	<!-- container -->
+  
+  <script>
+    var morris_data = <%= morris_data %>;
+  </script>
+
+	<!-- Included JS Files -->
+	<script src="javascripts/foundation.js"></script>
+	<script src="javascripts/raphael-min.js"></script>
+	<script src="javascripts/morris.min.js"></script>
+	<script src="javascripts/app.js"></script>
+
+</body>
+</html>
