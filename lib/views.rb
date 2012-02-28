@@ -12,6 +12,23 @@ def stats_data(documents)
   return data.to_a.map{|d| {:y => d[0], :a => d[1]}}.to_json
 end
 
+def stats_subject(pool)
+  content = {}
+  pool.documents.each do |doc|
+    doc.subject.split(" ").select{|word| word.size > 2}.map{|word| word.downcase}.each do |word|
+      if content[word]
+        content[word] += 1
+      else 
+        content[word] = 1
+      end
+    end
+  end
+  content.delete("re:")
+  content.delete("fwd:")
+  content.delete("the")
+  return content.sort_by{|k,v| !v }.to_a[0..3]
+end
+
 def pool_list
   pools = Pool.all(:order => :created_at.desc)
   content = "<ul>"
