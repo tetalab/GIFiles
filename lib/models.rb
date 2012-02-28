@@ -9,10 +9,9 @@ class Document
   key :subject, String
   key :href, String
   key :date, Time
-  #key :email_ids, Array
 
-  #one :sender, :in => :email_ids
-  #many :receivers, :in => :emails_ids
+  one :sender
+  many :receivers
 
   belongs_to :pool
 
@@ -21,10 +20,14 @@ end
 
 class Email
   include MongoMapper::Document
-
-  key :label, String
-
+  key :email, String
   timestamps!
+end
+
+class Sender < Email
+end
+
+class Receiver < Email
 end
 
 class Pool

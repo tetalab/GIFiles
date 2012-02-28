@@ -18,5 +18,16 @@ def fetch_release(forced = false)
   end
 end
 
-fetch_release
+def fetch_emails
+  Document.all.each do |doc|
+    puts "parse_emails: #{doc.href}"
+    if doc.receivers.empty?
+      parse_emails(doc)
+      puts "Sender: #{doc.sender.email}" if doc.sender
+      puts "receivers: #{doc.receivers.size}" if doc.receivers
+    end
+  end
+end
+
+#fetch_release
 #create_html
