@@ -16,7 +16,8 @@ def parse_emails(document)
   document.save
 end
 
-def parse_table(table, new_content)
+def parse_table(table)
+  documents = []
   table.css("tr").each do |row|
     if cells = row.css("td")
       if cells[0]
@@ -32,32 +33,32 @@ def parse_table(table, new_content)
             :date => date
           )
           parse_emails(document)
-          new_content << document
+          documents << document
         end
       end
     end
   end
+  return documents
 end
 
-def parse_page(href, new_content)
+def parse_page(href)
+  documents = []
   doc = Nokogiri::HTML(open("http://wikileaks.org#{href}"))
   if table = doc.css("table.cable")
-    parse_table(doc, new_content)
+    documents |= parse_table(doc)
 
     if next_link = doc.css(".pane.big a").select{|link| link.text == "Next"}.first
-      parse_page(next_link["href"], new_content)
+      documents |= parse_page(next_link["href"])
     end
   end
+  return documents
 end
 
-def parse_gifiles(new_content)
+def parse_gifiles
+  documents = []
   doc = Nokogiri::HTML(open("http://wikileaks.org/gifiles/releasedate/2012-02-27.html"))
   doc.css(".listoflist")[1].css("a").each do |date|
-    parse_page(date["href"], new_content)
-    unless new_content.empty?
-      pool = Pool.new
-      pool.documents = new_content
-      pool.save
-    end
+    documents |= parse_page(date["href"])
   end
+  return documents
 end

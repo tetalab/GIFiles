@@ -19,6 +19,7 @@ def pool_list
     creation_date = pool.created_at.strftime("%d-%m-%Y_at_%H:%M")
     content << "<li><a href='#{creation_date}.html'>#{creation_date}</a> : #{pool.documents.size} documents</li>"
   end
+  content << "</ul><p>Total: #{Document.count} documents</p>"
   return content
 end
 

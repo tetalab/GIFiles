@@ -10,10 +10,14 @@ require './lib/views'
 def fetch_release(forced = false)
   new_content = []
 
-  parse_gifiles(new_content)
+  current_count = Document.count
 
-  puts "Releases: #{new_content.size}"
-  if new_content.size > 0
+  doc = Nokogiri::HTML(open("http://wikileaks.org/gifiles/releasedate/2012-02-27.html"))
+  remote_count = doc.css("div.pane.small").text.scan(/\d+/).first.to_i
+
+  if current_count != remote_count
+    Pool.create(:documents => parse_gifiles)
+    puts "Mail released: #{Pool.last.documents.count}"
     create_html
   end
 end
@@ -30,4 +34,4 @@ def fetch_emails
 end
 
 #fetch_release
-#create_html
+create_html
