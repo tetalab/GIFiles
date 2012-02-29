@@ -42,12 +42,12 @@
     <div class="row">
       <div class="eight columns">
         <h2>Wikileaks GIFiles</h2>
-				<p>Follow the release updates</p>
+        <p>Follow the release updates</p>
+        
+        <%= content %>
+
       </div>
       <div class="four columns">
-        <h3>Latest releases</h3>
-        <%= content %>
-        <hr>
         <ul>
           <li><a href="http://wikileaks.org/gifiles">Wikileaks - The Global Intelligence Files</a></li>
           <li><a href="http://tetalab.org">Tetalab</a></li>
@@ -65,7 +65,12 @@
 	<script src="javascripts/foundation.js"></script>
 	<script src="javascripts/raphael-min.js"></script>
 	<script src="javascripts/morris.min.js"></script>
+	<script src="javascripts/vivagraph.min.js"></script>
 	<script src="javascripts/app.js"></script>
+
+  <script>
+    <%= graph_data %>
+  </script>
 
 </body>
 </html>

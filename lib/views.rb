@@ -29,20 +29,49 @@ def stats_subject(pool)
   return content.sort_by{|k,v| v }.to_a[0..3]
 end
 
+def build_graph(pool)
+  graph = []
+  pool.documents.select{|doc| !doc.sender.nil? }.each do |doc|
+    links = []
+    doc.receivers.each do |receiver|
+      links << {:sender => doc.sender.email, :receiver => receiver.email}
+    end
+
+    graph |= links
+  end
+  return graph
+end
+
+def graph_list
+  content = ""
+  pools = Pool.all(:order => :created_at.desc)
+  index = 0
+  pools.each do |pool|
+    graph = build_graph(pool)
+    content << "buildGraph(pool#{index}, #{graph.to_json});"
+    index += 1
+  end
+  return content
+end
+
 def pool_list
   pools = Pool.all(:order => :created_at.desc)
-  content = "<ul>"
+  index = 0
+  content = "<div>"
   pools.each do |pool|
     creation_date = pool.created_at.strftime("%d-%m-%Y_at_%H:%M")
-    content << "<li><a href='#{creation_date}.html'>#{creation_date}</a> : #{pool.documents.size} documents</li>"
+    content << "<h4><a href='#{creation_date}.html'>#{creation_date}</a> : #{pool.documents.size} documents</h4>"
+    content << "<div id='pool#{index}' class='network'></div>"
+    index += 1
   end
-  content << "</ul><p>Total: #{Document.count} documents</p>"
+  content << "</div>"
   return content
 end
 
 def create_index
   content = pool_list
   morris_data = stats_data(Document.where(:date.gte => 20.years.ago).sort(:date.desc))
+  graph_data = graph_list
   erb = ERB.new(File.read("layouts/index.erb"))
   File.open("_site/index.html", "w"){|f| f.write(erb.result(binding))}
 end

@@ -4,14 +4,24 @@ require 'open-uri'
 def parse_emails(document)
   url = "http://wikileaks.org#{document.href}"
   doc = Nokogiri::HTML(open(url))
-  emails = []
   table = doc.css("table.cable:first tr")
   if from_row = table.select{|row| row.css("th").text == "From" }.map{|row| row.css("td").text.strip }.first
-    document.sender = Sender.find_or_create_by_email(from_row) unless from_row.empty?
+    unless from_row.empty?
+      document.sender = Sender.find_or_create_by_email(from_row) 
+      document.sender.documents << document
+      document.sender.save
+    end
   end
   if to_row = table.select{|row| row.css("th").text == "To" }.map{|row| row.css("td").text.strip }.first
     receivers = to_row.split(", ")
-    document.receivers = receivers.map{|email| Receiver.find_or_create_by_email(email)} unless receivers.empty?
+    unless receivers.empty?
+      receivers.each do |email|
+        receiver = Receiver.find_or_create_by_email(email)
+        receiver.documents << document
+        receiver.save
+        document.receivers << receiver
+      end
+    end
   end
   document.save
 end

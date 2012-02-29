@@ -21,6 +21,8 @@ end
 class Email
   include MongoMapper::Document
   key :email, String
+  key :document_ids, Array
+  many :documents, :in => :document_ids
   timestamps!
 end
 

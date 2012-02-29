@@ -1,3 +1,21 @@
+  function buildGraph(pool, network){
+    var graph = Viva.Graph.graph();
+    
+    $.each(network, function(){
+      graph.addLink(this.sender, this.receiver);
+    });
+
+    // Set custom nodes appearance
+    var graphics = Viva.Graph.View.svgGraphics();
+
+    var renderer = Viva.Graph.View.renderer(graph, {
+          graphics : graphics,
+          container: pool
+    });
+    renderer.run();
+  }
+
+
 /* Foundation v2.1.4 http://foundation.zurb.com */
 $(document).ready(function () {
 
@@ -83,13 +101,12 @@ $(document).ready(function () {
 	/* DISABLED BUTTONS ------------- */
 	/* Gives elements with a class of 'disabled' a return: false; */
 
-  // annual data
-Morris.Line({
-  element: 'annual',
-  data: morris_data,
-  xkey: 'y',
-  ykeys: ['a'],
-  labels: ['Mails']
-});
-
+  // Timeline data
+  Morris.Line({
+    element: 'annual',
+    data: morris_data,
+    xkey: 'y',
+    ykeys: ['a'],
+    labels: ['Mails']
+  });
 });

@@ -33,5 +33,6 @@ def fetch_emails
   end
 end
 
-fetch_release
-#create_html
+#fetch_release
+create_html
+#fetch_emails
