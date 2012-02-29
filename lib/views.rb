@@ -57,14 +57,16 @@ end
 def pool_list
   pools = Pool.all(:order => :created_at.desc)
   index = 0
-  content = "<div>"
+  content = "<ul class='block-grid two-up' id='pools'>"
   pools.each do |pool|
     creation_date = pool.created_at.strftime("%d-%m-%Y_at_%H:%M")
-    content << "<h4><a href='#{creation_date}.html'>#{creation_date}</a> : #{pool.documents.size} documents</h4>"
+    content << "<li><h4><a href='#{creation_date}.html'>#{pool.documents.size} documents</a></h4>"
     content << "<div id='pool#{index}' class='network'></div>"
+    content << "<p>#{creation_date.gsub("_", " ")}</p>"
+    content << "</li>"
     index += 1
   end
-  content << "</div>"
+  content << "</ul>"
   return content
 end
 

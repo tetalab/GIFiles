@@ -8,9 +8,17 @@
     // Set custom nodes appearance
     var graphics = Viva.Graph.View.svgGraphics();
 
+    var layout = Viva.Graph.Layout.forceDirected(graph, {
+      springLength : 20,
+      springCoeff : 0.001,
+      dragCoeff : 0.02,
+      gravity : -0.01
+    });
+
     var renderer = Viva.Graph.View.renderer(graph, {
           graphics : graphics,
-          container: pool
+          container: pool,
+          layout: layout
     });
     renderer.run();
   }

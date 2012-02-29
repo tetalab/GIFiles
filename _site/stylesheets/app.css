@@ -15,9 +15,19 @@
 }
 
 .network{
-  height:100px;
-  width:100px;
+  height:150px;
+  width:300px;
 }
+
+#pools li{
+  background-color: #eee;
+  padding-top:5px;
+  text-align:center;
+}
+
+#pools li h4 {
+}
+
 /* -----------------------------------------
    Shared Styles
 ----------------------------------------- */
