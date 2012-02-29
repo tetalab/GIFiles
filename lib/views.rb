@@ -57,7 +57,7 @@ end
 def pool_list
   pools = Pool.all(:order => :created_at.desc)
   index = 0
-  content = "<ul class='block-grid two-up' id='pools'>"
+  content = "<ul class='block-grid three-up' id='pools'>"
   pools.each do |pool|
     creation_date = pool.created_at.strftime("%d-%m-%Y_at_%H:%M")
     content << "<li><h4><a href='#{creation_date}.html'>#{pool.documents.size} documents</a></h4>"
