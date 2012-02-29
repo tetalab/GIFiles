@@ -24,8 +24,30 @@
   text-align:center;
 }
 
-#pools li h4 {
+#pools li.intro {
+  text-align:left;
+  padding-left:5px;
+  height:214px;
 }
+
+#pools span.bullet {
+  background-color:#00a2e8;
+  float:left;
+  height:6px;
+  margin-top:5px;
+  margin-right:6px;
+  width:6px;
+}
+
+#pools span.stratfor {
+  background-color:#a20000;
+  float:left;
+  height:6px;
+  margin-top:5px;
+  margin-right:6px;
+  width:6px;
+}
+
 
 /* -----------------------------------------
    Shared Styles

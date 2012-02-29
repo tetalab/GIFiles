@@ -8,6 +8,20 @@
     // Set custom nodes appearance
     var graphics = Viva.Graph.View.svgGraphics();
 
+    graphics.node(function(node) {
+      var color = '#00a2e8';
+      if(node.id.match(/@stratfor.com/g)){
+        color = '#a20000';
+      }
+      return Viva.Graph.svg('rect')
+            .attr('width', 6)
+            .attr('height', 6)
+            .attr('fill', color);
+    }).placeNode(function(nodeUI, pos){
+        // Shift to let links go to the center:
+        nodeUI.attr('x', pos.x - 3).attr('y', pos.y - 3);
+    });
+
     var layout = Viva.Graph.Layout.forceDirected(graph, {
       springLength : 20,
       springCoeff : 0.001,

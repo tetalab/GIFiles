@@ -39,8 +39,16 @@
         <hr />
 
         <h2>Wikileaks GIFiles</h2>
-        <p>Follow the release updates</p>
+
         <ul class='block-grid three-up' id='pools'>
+          <li class="intro">
+            <h4>What is this?</h4>
+            <p>This website is following the stream of mails released on <a href="http://wikileaks.com/gifiles/">Wikileaks GIFiles</a></p>
+            <p>The color of the nodes on each network graph indicates:<br>
+              <span class="stratfor"></span> mails from @stratfor.com<br>
+              <span class="bullet"></span> mails from other domains
+            </p>
+          </li>
         <% Pool.all(:order => :created_at.desc).each_with_index do |pool, index| %>
           <li>
             <h4><a href='<%= pool.created_at.strftime("%d-%m-%Y_at_%H:%M") %>.html'><%= pool.documents.size %> documents</a></h4>
