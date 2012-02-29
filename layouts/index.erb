@@ -52,7 +52,7 @@
           </li>
         <% Pool.all(:order => :created_at.desc).each_with_index do |pool, index| %>
           <li>
-            <h4><a href='<%= pool.created_at.strftime("%d-%m-%Y_at_%H:%M") %>.html'><%= pool.documents.size %> mails</a></h4>
+          <h4><a href='<%= pool.created_at.strftime("%d-%m-%Y_at_%H:%M") %>.html'><%= pool.documents.size %> mail<%= "s" if pool.documents.size > 1 %></a></h4>
             <div id="pool<%= index %>" class="network"></div>
             <p>Released on <%= pool.created_at.strftime("%d-%m-%Y at %H:%M") %></p>
           </li>

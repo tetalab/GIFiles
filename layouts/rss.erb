@@ -10,7 +10,7 @@
   
   <% Pool.all(:order => :created_at.desc).each do |pool| %>
     <item>
-      <title><%= pool.documents.count %> new mails released</title>
+      <title><%= pool.documents.count %> new mail<%= "s" if pool.documents.size > 1 %> released</title>
       <link>http://gifiles.tetalab.org/<%= pool.created_at.strftime "%d-%m-%Y_at_%H:%M" %>.html</link>
       <guid><%= pool._id %></guid>
       <pubDate><%= pool.created_at.to_s %></pubDate>
