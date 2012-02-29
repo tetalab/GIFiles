@@ -1,2 +1,3 @@
 _site/*.html
+_site/*.xml
 deploy.sh

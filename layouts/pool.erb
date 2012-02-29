@@ -26,6 +26,7 @@
 	<!--[if lt IE 9]>
 		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
+  <link rel='alternate' type='application/rss+xml' href='http://gifiles.tetalab.org/rss.xml' title='RSS' />
 
 </head>
 <body>
@@ -41,14 +42,14 @@
 		</div>
     <div class="row">
       <div class="eight columns">
-        <h2>Wikileaks GIFiles</h2>
+        <h2>Wikileaks GIFiles <a href="./rss.xml"><img src="./images/feed-icon.png" width=14 height=14 alt="rss"></a></h2>
         <%= content %>
       </div>
       <div class="four columns">
         <h3>Latest releases</h3>
         <% Pool.all(:order => :created_at.desc).each_with_index do |pool, index| %>
           <li><%= pool.created_at.strftime("%d-%m-%Y at %H:%M") %> - 
-          <a href='<%= pool.created_at.strftime("%d-%m-%Y_at_%H:%M") %>.html'><%= pool.documents.size %> documents</a></li>
+          <a href='<%= pool.created_at.strftime("%d-%m-%Y_at_%H:%M") %>.html'><%= pool.documents.size %> mails</a></li>
         <% end %>
         <hr>
         <ul>

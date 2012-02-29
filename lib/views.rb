@@ -89,4 +89,10 @@ end
 def create_html
   create_index
   create_pools
+  create_rss
+end
+
+def create_rss
+  erb = ERB.new(File.read("layouts/rss.erb"))
+  File.open("_site/rss.xml", "w"){|f| f.write(erb.result(binding))}
 end

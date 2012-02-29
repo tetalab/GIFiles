@@ -26,7 +26,7 @@
 	<!--[if lt IE 9]>
 		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
-
+  <link rel='alternate' type='application/rss+xml' href='http://gifiles.tetalab.org/rss.xml' title='RSS' />
 </head>
 <body>
 
@@ -38,20 +38,21 @@
         <div id="annual" class="graph"></div>
         <hr />
 
-        <h2>Wikileaks GIFiles</h2>
+        <h2>Wikileaks GIFiles <a href="./rss.xml"><img src="./images/feed-icon.png" width=14 height=14 alt="rss"></a></h2>
 
         <ul class='block-grid three-up' id='pools'>
           <li class="intro">
             <h4>What is this?</h4>
-            <p>This website is following the stream of mails released on <a href="http://wikileaks.com/gifiles/">Wikileaks GIFiles</a></p>
+            <p>This website is following the stream of mails released on <a href="http://wikileaks.org/gifiles/">Wikileaks GIFiles</a></p>
             <p>The color of the nodes on each network graph indicates:<br>
               <span class="stratfor"></span> mails from @stratfor.com<br>
               <span class="bullet"></span> mails from other domains
             </p>
+            <h5>Total: <%= Document.count %> mails released</h5>
           </li>
         <% Pool.all(:order => :created_at.desc).each_with_index do |pool, index| %>
           <li>
-            <h4><a href='<%= pool.created_at.strftime("%d-%m-%Y_at_%H:%M") %>.html'><%= pool.documents.size %> documents</a></h4>
+            <h4><a href='<%= pool.created_at.strftime("%d-%m-%Y_at_%H:%M") %>.html'><%= pool.documents.size %> mails</a></h4>
             <div id="pool<%= index %>" class="network"></div>
             <p>Released on <%= pool.created_at.strftime("%d-%m-%Y at %H:%M") %></p>
           </li>

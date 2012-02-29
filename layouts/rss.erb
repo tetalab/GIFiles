@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+  <title>Wikileaks GIFiles - Tetalab</title>
+  <description>Stream of mails released on Wikileaks GIFiles</description>
+  <link>http://gifiles.tetalab.org/</link>
+  <lastBuildDate><%= Time.now.to_s %></lastBuildDate>
+  <pubDate><%= Time.now.to_s %></pubDate>
+  <ttl>1800</ttl>
+  
+  <% Pool.all(:order => :created_at.desc).each do |pool| %>
+    <item>
+      <title><%= pool.documents.count %> new mails released</title>
+      <link>http://gifiles.tetalab.org/<%= pool.created_at.strftime "%d-%m-%Y_at_%H:%M" %>.html</link>
+      <guid><%= pool._id %></guid>
+      <pubDate><%= pool.created_at.to_s %></pubDate>
+    </item>
+  <% end %>
+</channel>
+</rss>
