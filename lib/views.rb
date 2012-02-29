@@ -54,33 +54,13 @@ def graph_list
   return content
 end
 
-def pool_list
-  pools = Pool.all(:order => :created_at.desc)
-  index = 0
-  content = "<ul class='block-grid three-up' id='pools'>"
-  pools.each do |pool|
-    creation_date = pool.created_at.strftime("%d-%m-%Y_at_%H:%M")
-    content << "<li><h4><a href='#{creation_date}.html'>#{pool.documents.size} documents</a></h4>"
-    content << "<div id='pool#{index}' class='network'></div>"
-    content << "<p>#{creation_date.gsub("_", " ")}</p>"
-    content << "</li>"
-    index += 1
-  end
-  content << "</ul>"
-  return content
-end
-
 def create_index
-  content = pool_list
-  morris_data = stats_data(Document.where(:date.gte => 20.years.ago).sort(:date.desc))
-  graph_data = graph_list
   erb = ERB.new(File.read("layouts/index.erb"))
   File.open("_site/index.html", "w"){|f| f.write(erb.result(binding))}
 end
 
 def create_pools
   erb = ERB.new(File.read("layouts/pool.erb"))
-  menu = pool_list
   Pool.all.each do |pool|
     content = "<p>Released at #{pool.created_at.strftime("%H:%M on %d/%m/%Y")} - #{pool.documents.size} documents"
     creation_date = pool.created_at.strftime("%d-%m-%Y_at_%H:%M")

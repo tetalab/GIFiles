@@ -40,7 +40,15 @@
 
         <h2>Wikileaks GIFiles</h2>
         <p>Follow the release updates</p>
-        <%= content %>
+        <ul class='block-grid three-up' id='pools'>
+        <% Pool.all(:order => :created_at.desc).each_with_index do |pool, index| %>
+          <li>
+            <h4><a href='<%= pool.created_at.strftime("%d-%m-%Y_at_%H:%M") %>.html'><%= pool.documents.size %> documents</a></h4>
+            <div id="pool<%= index %>" class="network"></div>
+            <p>Released on <%= pool.created_at.strftime("%d-%m-%Y at %H:%M") %></p>
+          </li>
+        <% end %>
+        </ul>
 
         <hr>
 
@@ -53,7 +61,7 @@
 	<!-- container -->
   
   <script>
-    var morris_data = <%= morris_data %>;
+    var morris_data = <%= stats_data(Document.where(:date.gte => 20.years.ago).sort(:date.desc)) %>;
   </script>
 
 	<!-- Included JS Files -->
@@ -64,7 +72,7 @@
 	<script src="javascripts/app.js"></script>
 
   <script>
-    <%= graph_data %>
+    <%= graph_list %>
   </script>
 
 </body>

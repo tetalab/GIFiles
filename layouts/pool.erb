@@ -46,7 +46,10 @@
       </div>
       <div class="four columns">
         <h3>Latest releases</h3>
-        <%= menu %>
+        <% Pool.all(:order => :created_at.desc).each_with_index do |pool, index| %>
+          <li><%= pool.created_at.strftime("%d-%m-%Y at %H:%M") %> - 
+          <a href='<%= pool.created_at.strftime("%d-%m-%Y_at_%H:%M") %>.html'><%= pool.documents.size %> documents</a></li>
+        <% end %>
         <hr>
         <ul>
           <li><a href="http://wikileaks.org/gifiles">Wikileaks - The Global Intelligence Files</a></li>
