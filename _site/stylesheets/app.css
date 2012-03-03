@@ -48,6 +48,15 @@
   width:6px;
 }
 
+#pools span.friedman {
+  background-color:#00a200;
+  float:left;
+  height:6px;
+  margin-top:5px;
+  margin-right:6px;
+  width:6px;
+}
+
 
 /* -----------------------------------------
    Shared Styles

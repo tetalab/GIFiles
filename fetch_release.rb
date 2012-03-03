@@ -27,12 +27,12 @@ def fetch_emails
     puts "parse_emails: #{doc.href}"
     if doc.receivers.empty?
       parse_emails(doc)
-      puts "Sender: #{doc.sender.email}" if doc.sender
+      puts "Sender: #{doc.sender}" if doc.sender
       puts "receivers: #{doc.receivers.size}" if doc.receivers
     end
   end
 end
 
-#fetch_release
-create_html
+fetch_release
+#create_html
 #fetch_emails

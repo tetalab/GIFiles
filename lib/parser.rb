@@ -1,29 +1,46 @@
 require 'nokogiri'
 require 'open-uri'
 
-def parse_emails(document)
-  url = "http://wikileaks.org#{document.href}"
-  doc = Nokogiri::HTML(open(url))
-  table = doc.css("table.cable:first tr")
-  if from_row = table.select{|row| row.css("th").text == "From" }.map{|row| row.css("td").text.strip }.first
-    unless from_row.empty?
-      document.sender = Sender.find_or_create_by_email(from_row) 
-      document.sender.documents << document
-      document.sender.save
+def parse_date(document, table)
+  if date_row = table.select{|row| row.css("th").text == "Date" }.map{|row| row.css("td").text.strip }.first
+    unless date_row.empty? || date_row == "1970-01-01 01:00:00"
+      document.exact_date = DateTime.parse date_row
+      document.save
     end
   end
+end
+
+def parse_from(document, table)
+  if from_row = table.select{|row| row.css("th").text == "From" }.map{|row| row.css("td").text.strip }.first
+    unless from_row.empty?
+      document.sender = from_row
+      document.save
+    end
+  end
+end
+
+def parse_to(document, table)
   if to_row = table.select{|row| row.css("th").text == "To" }.map{|row| row.css("td").text.strip }.first
     receivers = to_row.split(", ")
     unless receivers.empty?
-      receivers.each do |email|
-        receiver = Receiver.find_or_create_by_email(email)
-        receiver.documents << document
-        receiver.save
-        document.receivers << receiver
-      end
+      document.receivers = receivers
+      document.save
     end
   end
-  document.save
+end
+
+def parse_emails(document)
+  filename = File.join("/Users/alx/code/gifiles-20120228225324/", document.href)
+  if File.exists? filename
+    doc = Nokogiri::HTML(open(filename))
+  else
+    url = "http://wikileaks.org#{document.href}"
+    doc = Nokogiri::HTML(open(url))
+  end
+  table = doc.css("table.cable:first tr")
+  parse_date(document, table)
+  parse_from(document, table)
+  parse_to(document, table)
 end
 
 def parse_table(table)

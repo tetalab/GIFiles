@@ -13,10 +13,16 @@
       if(node.id.match(/@stratfor.com/g)){
         color = '#a20000';
       }
+      if(node.id.match(/friedman@att.blackberry.net/g)){
+        color = '#00a200';
+      }
       return Viva.Graph.svg('rect')
             .attr('width', 6)
             .attr('height', 6)
-            .attr('fill', color);
+            .attr('fill', color)
+            .attr('title', node.id)
+            .attr('class', 'has-tip tip-right')
+            .attr('data-width', "210");
     }).placeNode(function(nodeUI, pos){
         // Shift to let links go to the center:
         nodeUI.attr('x', pos.x - 3).attr('y', pos.y - 3);
@@ -131,4 +137,6 @@ $(document).ready(function () {
     ykeys: ['a'],
     labels: ['Mails']
   });
+
+  //$(this).tooltips();
 });

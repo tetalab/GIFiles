@@ -9,33 +9,17 @@ class Document
   key :subject, String
   key :href, String
   key :date, Time
-
-  one :sender
-  many :receivers
+  key :exact_date, Time
+  key :sender, String
+  key :receivers, Array
 
   belongs_to :pool
 
   timestamps!
 end
 
-class Email
-  include MongoMapper::Document
-  key :email, String
-  key :document_ids, Array
-  many :documents, :in => :document_ids
-  timestamps!
-end
-
-class Sender < Email
-end
-
-class Receiver < Email
-end
-
 class Pool
   include MongoMapper::Document
-
   many :documents
-
   timestamps!
 end

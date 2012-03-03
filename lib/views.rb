@@ -34,7 +34,7 @@ def build_graph(pool)
   pool.documents.select{|doc| !doc.sender.nil? }.each do |doc|
     links = []
     doc.receivers.each do |receiver|
-      links << {:sender => doc.sender.email, :receiver => receiver.email}
+      links << {:sender => doc.sender, :receiver => receiver}
     end
 
     graph |= links
@@ -67,7 +67,7 @@ def create_pools
     current_date = nil
     closing = false
     morris_data = stats_data(pool.documents.where(:date.gte => 20.years.ago).sort(:date.desc))
-    pool.documents.all(:order => :date.asc).each do |document|
+    pool.documents.all(:order => :exact_date.asc).each do |document|
       if current_date.nil? || current_date != document.date
         content += "</ul>" if closing
         if document.date.strftime("%Y-%m") == "1970-01"
